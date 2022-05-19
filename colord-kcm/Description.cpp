@@ -270,9 +270,6 @@ void Description::setDevice(const QDBusObjectPath &objectPath)
         }
     }
     ui->defaultProfileName->setText(profileTitle);
-
-    // Verify if the Calibrate button should be enabled or disabled
-    ui->calibratePB->setEnabled(calibrateEnabled(m_currentDeviceKind));
 }
 
 void Description::on_installSystemWideBt_clicked()
@@ -306,9 +303,6 @@ void Description::gotSensors(QDBusPendingCallWatcher *call)
             // Add the sensors but don't update the Calibrate button
             sensorAdded(sensor, false);
         }
-
-        // Update the calibrate button later
-        ui->calibratePB->setEnabled(calibrateEnabled(m_currentDeviceKind));
     }
 }
 
@@ -316,10 +310,6 @@ void Description::sensorAdded(const QDBusObjectPath &sensorPath, bool updateCali
 {
     if (!m_sensors.contains(sensorPath)) {
         m_sensors.append(sensorPath);
-    }
-
-    if (updateCalibrateButton) {
-        ui->calibratePB->setEnabled(calibrateEnabled(m_currentDeviceKind));
     }
 }
 
@@ -331,9 +321,6 @@ void Description::sensorAddedUpdateCalibrateButton(const QDBusObjectPath &sensor
 void Description::sensorRemoved(const QDBusObjectPath &sensorPath, bool updateCalibrateButton)
 {
     m_sensors.removeOne(sensorPath);
-    if (updateCalibrateButton) {
-        ui->calibratePB->setEnabled(calibrateEnabled(m_currentDeviceKind));
-    }
 }
 
 void Description::sensorRemovedUpdateCalibrateButton(const QDBusObjectPath &sensorPath)
@@ -381,66 +368,5 @@ void Description::removeTab(QWidget *widget)
 
 bool Description::calibrateEnabled(const QString &kind)
 {
-    QString toolTip;
-    bool canCalibrate = false;
-    toolTip = i18n("Create a color profile for the selected device");
-
-    if (m_currentDeviceId.isEmpty()) {
-        // No device was selected
-        return false;
-    }
-
-    QFileInfo gcmCalibrate(QStandardPaths::findExecutable("gcm-calibrate"));
-    if (!gcmCalibrate.isExecutable()) {
-        // We don't have a calibration tool yet
-        toolTip = i18n("You need Gnome Color Management installed in order to calibrate devices");
-    } else if (kind == QLatin1String("display")) {
-        if (m_sensors.isEmpty()) {
-            toolTip = i18n("The measuring instrument is not detected. Please check it is turned on and correctly connected.");
-        } else {
-            canCalibrate = true;
-        }
-    } else if (kind == QLatin1String("camera") ||
-               kind == QLatin1String("scanner") ||
-               kind == QLatin1String("webcam")) {
-        canCalibrate = true;
-    } else if (kind == QLatin1String("printer")) {
-        // Check if we have any sensor
-        if (m_sensors.isEmpty()) {
-            toolTip = i18n("The measuring instrument is not detected. Please check it is turned on and correctly connected.");
-        } else {
-            // Search for a suitable sensor
-            foreach (const QDBusObjectPath &sensorPath, m_sensors) {
-                CdSensorInterface sensor(QStringLiteral("org.freedesktop.ColorManager"),
-                                         sensorPath.path(),
-                                         QDBusConnection::systemBus());
-                if (!sensor.isValid()) {
-                    continue;
-                }
-
-                QStringList capabilities = sensor.capabilities();
-                if (capabilities.contains(QStringLiteral("printer"))) {
-                    canCalibrate = true;
-                    break;
-                }
-            }
-
-            // If we did not find a suitable sensor, display a warning
-            if (!canCalibrate) {
-                toolTip = i18n("The measuring instrument does not support printer profiling.");
-            }
-        }
-    } else {
-        toolTip = i18n("The device type is not currently supported.");
-    }
-
-    if (canCalibrate) {
-        ui->calibratePB->setToolTip(toolTip);
-        ui->msgWidget->hide();
-    } else {
-        ui->msgWidget->setText(toolTip);
-        ui->msgWidget->show();
-    }
-
-    return canCalibrate;
+    return false;
 }

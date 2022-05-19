@@ -11,7 +11,16 @@
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item row="0" column="0">
@@ -21,7 +30,16 @@
        <string>Information</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item row="0" column="0">
@@ -376,14 +394,7 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="1">
-            <widget class="QPushButton" name="calibratePB">
-             <property name="text">
-              <string>Calibrate</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="0" colspan="2">
+           <item row="7" column="0" colspan="2">
             <widget class="KMessageWidget" name="msgWidget"/>
            </item>
           </layout>
@@ -416,9 +427,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>KSeparator</class>
+   <class>KMessageWidget</class>
    <extends>QFrame</extends>
-   <header>kseparator.h</header>
+   <header>kmessagewidget.h</header>
   </customwidget>
   <customwidget>
    <class>KTitleWidget</class>
